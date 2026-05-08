@@ -71,7 +71,7 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
   CMAKE_AICXXCOMMIT=$(git rev-parse HEAD)
   echo "CMAKE_AICXXCOMMIT = \"$CMAKE_AICXXCOMMIT\""
   popd >/dev/null
-  CMAKE_AICXXHASH=$(git ls-tree HEAD | grep '[[:space:]]cmake/aicxx$' | awk '{ print $3 }')
+  CMAKE_AICXXHASH=$(git ls-tree HEAD:cmake aicxx | grep '[[:space:]]aicxx$' | awk '{ print $3 }')
   echo "CMAKE_AICXXHASH = \"$CMAKE_AICXXHASH\""
   if test "$CMAKE_AICXXHASH" != "$CMAKE_AICXXCOMMIT"; then
     if git diff-index --quiet --cached HEAD; then
