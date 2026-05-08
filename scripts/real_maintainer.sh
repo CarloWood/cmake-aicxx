@@ -91,7 +91,6 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
 
   # Check if 'branch' is set for all submodules owned by CarloWood and fix the url of remotes when needed.
   git submodule foreach --recursive -q '
-      echo "name = \"$name\""
       URL=$(git config -f $toplevel/.gitmodules submodule.$name.url)
       regex="^(github-carlo:|https://github\.com/)CarloWood"
       if [[ $URL =~ $regex ]]; then
