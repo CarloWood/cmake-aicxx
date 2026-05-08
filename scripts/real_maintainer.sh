@@ -93,7 +93,6 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
   git submodule foreach --recursive -q '
       echo "name = \"$name\""
       URL=$(git config -f $toplevel/.gitmodules submodule.$name.url)
-      echo "URL = \"$URL\""
       regex="^(github-carlo:|https://github\.com/)CarloWood"
       if [[ $URL =~ $regex ]]; then
         if ! git config -f $toplevel/.gitmodules submodule.$name.branch >/dev/null; then
@@ -114,10 +113,7 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
           git config -f $toplevel/.gitmodules "submodule.$name.url" "$NEWURL"
         fi
         BRANCH=$(git config -f $toplevel/.gitmodules submodule.$name.branch)
-        echo "PWD = \"$PWD\""
-        echo "BRANCH = \"$BRANCH\""
         REMOTE=$(git config branch.$BRANCH.remote)
-        echo "REMOTE = \"$REMOTE\""
         if test -n "$GITHUB_REMOTE_NAME" -a x"$REMOTE" != x"$GITHUB_REMOTE_NAME"; then
           echo "  $name: '"$red"'Renaming remote from $REMOTE to $GITHUB_REMOTE_NAME!'"$reset"'"
           git remote rename $REMOTE $GITHUB_REMOTE_NAME
