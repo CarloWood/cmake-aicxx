@@ -13,6 +13,22 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
   # Greetings.
   echo "Hi $GIT_COMMITTER_NAME, how are you today?"
 
+  # Sanity check.
+  CMAKE_AICXX_BRANCH=$(git config -f .gitmodules submodule.cmake/aicxx.branch)
+  if test -z "$CMAKE_AICXX_BRANCH"; then
+    echo "$prefix $red""Setting submodule.cmake/aicxx.branch to master!"
+    git config -f .gitmodules submodule.cmake/aicxx.branch master
+    CMAKE_AICXX_BRANCH="master"
+  fi
+
+  # Is cmake-aicxx on CMAKE_AICXX_BRANCH already?
+  pushd cmake/aicxx >/dev/null || exit 1
+  if test x"$(git rev-parse --abbrev-ref HEAD)" != x"$CMAKE_AICXX_BRANCH"; then
+    echo "$prefix $red""cmake-aicxx is not up-to-date$reset; checking out branch $CMAKE_AICXX_BRANCH."
+    git checkout $CMAKE_AICXX_BRANCH && git pull --ff-only || exit 1
+  fi
+  popd >/dev/null
+
   if [[ -z "$AICXX_AUTOGEN_BRANCH" ]]; then
     if git show-ref --quiet refs/heads/master; then
       AICXX_AUTOGEN_BRANCH=master
@@ -23,22 +39,6 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
       exit 1
     fi
   fi
-
-  # Sanity check.
-  CMAKE_AICXX_BRANCH=$(git config -f .gitmodules submodule.cmake/aicxx.branch)
-  if test -z "$CMAKE_AICXX_BRANCH"; then
-    echo "$prefix $red""Setting submodule.cmake/aicxx.branch to $AICXX_AUTOGEN_BRANCH!"
-    git config -f .gitmodules submodule.cmake/aicxx.branch $AICXX_AUTOGEN_BRANCH
-    CMAKE_AICXX_BRANCH="$AICXX_AUTOGEN_BRANCH"
-  fi
-
-  # Is cmake-aicxx on CMAKE_AICXX_BRANCH already?
-  pushd cmake/aicxx >/dev/null || exit 1
-  if test x"$(git rev-parse --abbrev-ref HEAD)" != x"$CMAKE_AICXX_BRANCH"; then
-    echo "$prefix $red""cmake-aicxx is not up-to-date$reset; checking out branch $CMAKE_AICXX_BRANCH."
-    git checkout $CMAKE_AICXX_BRANCH && git pull --ff-only || exit 1
-  fi
-  popd >/dev/null
 
   # Get the trailing 'AccountName/projectname.git' of the upstream fetch url of branch $AICXX_AUTOGEN_BRANCH:
   AICXX_AUTOGEN_BRANCH_REMOTE=$(git config branch.$AICXX_AUTOGEN_BRANCH.remote)
