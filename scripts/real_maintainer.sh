@@ -52,7 +52,6 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
     exit 1
   fi
   PROJECT_URL="$(git config remote.$AICXX_AUTOGEN_BRANCH_REMOTE.url | sed -e 's%.*[^A-Za-z-]\([^/ ]*/[^/ ]*$\)%\1%')"
-  echo "PROJECT_URL = \"$PROJECT_URL\""
   NEW_MD5=$(sed -e "s%@PROJECT_URL@%$PROJECT_URL%" cmake/aicxx/templates/autogen.sh | cat - cmake/aicxx/scripts/real_maintainer.sh | md5sum)
   OLD_MD5=$(cat autogen.sh cmake/aicxx/scripts/real_maintainer.sh | md5sum)
   if test "$OLD_MD5" = "$NEW_MD5"; then
@@ -70,8 +69,10 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
     git commit -a -m 'Automatic commit of changes by autogen.sh.'
   fi
   CMAKE_AICXXCOMMIT=$(git rev-parse HEAD)
+  echo "CMAKE_AICXXCOMMIT = \"$CMAKE_AICXXCOMMIT\""
   popd >/dev/null
   CMAKE_AICXXHASH=$(git ls-tree HEAD | grep '[[:space:]]cmake/aicxx$' | awk '{ print $3 }')
+  echo "CMAKE_AICXXHASH = \"$CMAKE_AICXXHASH\""
   if test "$CMAKE_AICXXHASH" != "$CMAKE_AICXXCOMMIT"; then
     if git diff-index --quiet --cached HEAD; then
       echo -e "\n$prefix $red""Updating gitlink cmake/aicxx to current $CMAKE_AICXX_BRANCH branch!$reset"
