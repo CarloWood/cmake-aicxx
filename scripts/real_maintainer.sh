@@ -51,7 +51,7 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
     echo "git push -u REMOTE $AICXX_AUTOGEN_BRANCH"
     exit 1
   fi
-  PROJECT_URL="$(git config remote.$AICXX_AUTOGEN_BRANCH_REMOTE.url | sed -e 's%.*[^A-Za-z]\([^/ ]*/[^/ ]*$\)%\1%')"
+  PROJECT_URL="$(git config remote.$AICXX_AUTOGEN_BRANCH_REMOTE.url | sed -e 's%.*[^A-Za-z]*/\([^/ ]*/[^/ ]*$\)%\1%')"
   echo "PROJECT_URL = \"$PROJECT_URL\""
   NEW_MD5=$(sed -e "s%@PROJECT_URL@%$PROJECT_URL%" cmake/aicxx/templates/autogen.sh | cat - cmake/aicxx/scripts/real_maintainer.sh | md5sum)
   OLD_MD5=$(cat autogen.sh cmake/aicxx/scripts/real_maintainer.sh | md5sum)
