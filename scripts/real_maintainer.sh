@@ -97,18 +97,16 @@ if test "$(echo "$GIT_COMMITTER_EMAIL $GIT_COMMITTER_NAME" | md5sum | cut -d \  
       regex="^(github-carlo:|https://github\.com/)CarloWood"
       if [[ $URL =~ $regex ]]; then
         if ! git config -f $toplevel/.gitmodules submodule.$name.branch >/dev/null; then
-          if [[ -z "$AICXX_AUTOGEN_BRANCH" ]]; then
-            if git show-ref --quiet refs/heads/master; then
-              AICXX_AUTOGEN_BRANCH=master
-            elif git show-ref --quiet refs/heads/main; then
-              AICXX_AUTOGEN_BRANCH=main
-            else
-              echo "Fatal error: branch master does not exist."
-              exit 1
-            fi
+          if git show-ref --quiet refs/heads/master; then
+            MASTER=master
+          elif git show-ref --quiet refs/heads/main; then
+            MASTER=main
+          else
+            echo "Fatal error: branch master does not exist."
+            exit 1
           fi
-          echo "  $name: '"$red"'Setting submodule.$name.branch to $AICXX_AUTOGEN_BRANCH!'"$reset"'"
-          git config -f $toplevel/.gitmodules "submodule.$name.branch" $AICXX_AUTOGEN_BRANCH
+          echo "  $name: '"$red"'Setting submodule.$name.branch to $MASTER!'"$reset"'"
+          git config -f $toplevel/.gitmodules "submodule.$name.branch" $MASTER
         fi
         NEWURL=$(echo "$URL" | sed -e '"'"'s%^github-carlo:%https://github.com/%'"'"')
         if test "$URL" != "$NEWURL"; then
