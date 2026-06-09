@@ -182,14 +182,27 @@ for f in **/*.cxx **/*.cpp **/*.cc **/*.C; do
   rel="${f#./}"
   key="${rel%%/*}"
   add_key "$key"
-  while IFS= read -r match; do
-    pattern='^[[:space:]]*channel_ct[[:space:]]+[[:alnum:]_]+\(\"([[:alnum:]_]+)\"\);[[:space:]]*(//.*)?$'
-    if [[ "$match" =~ $pattern ]]; then
-      channel="${BASH_REMATCH[1]}"
+  # Scan only explicitly marked debug-channel namespace blocks.
+  #
+  # This script is also used with libcwd version 1 source trees, so accept both the old `channel_ct` type and
+  # the modern `Channel` type while ignoring unrelated declarations outside the marker pair.
+  in_debug_channels_block=false
+  pattern='^[[:space:]]*(Channel|channel_ct)[[:space:]]+[[:alnum:]_]+\(\"([[:alnum:]_]+)\"\);[[:space:]]*(//.*)?$'
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [[ "$line" =~ ^[[:space:]]*NAMESPACE_DEBUG_CHANNELS_START([[:space:]]|$) ]]; then
+      in_debug_channels_block=true
+      continue
+    fi
+    if [[ "$line" =~ ^[[:space:]]*NAMESPACE_DEBUG_CHANNELS_END([[:space:]]|$) ]]; then
+      in_debug_channels_block=false
+      continue
+    fi
+    if $in_debug_channels_block && [[ "$line" =~ $pattern ]]; then
+      channel="${BASH_REMATCH[2]}"
       channel="${channel,,}"            # To lower case.
       add_off_channel "$key" "$channel"
     fi
-  done < <(grep -E '^[[:space:]]*channel_ct[[:space:]]+' "$f" || true)
+  done < "$f"
 done
 
 # Compute key order: explicit → *-task → rest.
