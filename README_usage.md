@@ -48,7 +48,8 @@ where `/opt/gitache` is owned by you.
 The typical `CMakeLists.txt` file, containing a single executable,
 would look like
 
-    include(AICxxProject)
+    include(cmake/aicxx/Project NO_POLICY_SCOPE)
+    include(AICxxSubmodules)    # Build all existing aicxx modules and populate AICXX_OBJECTS_LIST with them.
 
     add_executable(some_test some_test.cxx)
     target_link_libraries(some_test PRIVATE ${AICXX_OBJECTS_LIST})
