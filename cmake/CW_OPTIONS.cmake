@@ -225,7 +225,8 @@ if (NOT "${PROJECT_NAME}" STREQUAL "libcwd")
       find_package(libcwd_r CONFIG)
       if (libcwd_r_FOUND)
         set(default_enable_libcwd ON)
-        set(libcwd_r_TARGET "Libcwd::cwd_r")
+        set(libcwd_r_TARGET "Libcwd::cwd_r")    # DO NOT USE THIS ANYMORE (libcwd_r_TARGET is deprecated).
+        set(libcwd_TARGET "Libcwd::cwd_r")      # Always use libcwd_TARGET.
       else ()
         set(default_enable_libcwd OFF)
       endif ()
